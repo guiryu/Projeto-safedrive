@@ -1,7 +1,7 @@
 /*
 Guilherme Ryu Ojima - 10769513
-Gustavo
-Raphael
+Gustavo De Souza Horner HOE - 10769967
+Raphael Norio Arashiro Uehara - 10774187
 */
 
 #include <stdio.h>
@@ -12,7 +12,7 @@ Raphael
 
 
 void inicializar_matriz(int quantidade_linhas, int tamanho, float matriz[][tamanho]);
- void relatorio (int quantidade_linhas, float velocidades[MAX_AMOSTRAS][2], float sensores_frontais[MAX_AMOSTRAS][3] ,float sensores_laterais[MAX_AMOSTRAS][2], float processamento[MAX_AMOSTRAS][2] , float status[MAX_AMOSTRAS][3]);
+void relatorio (int quantidade_linhas, float velocidades[MAX_AMOSTRAS][2], float sensores_frontais[MAX_AMOSTRAS][3] ,float sensores_laterais[MAX_AMOSTRAS][2], float processamento[MAX_AMOSTRAS][2] , float status[MAX_AMOSTRAS][3]);
 void fusao_sensores(int linhas, int tamanho, float matriz[linhas][tamanho], float processamento[MAX_AMOSTRAS][2]);
 void distancia_segura(int sensi, int atrito, int colunas, int quantidade, float vel[][colunas], float processamento[][colunas]);
 void analise_risco_frontal(int quantidade_linhas, float velocidades[MAX_AMOSTRAS][2], float processamento[MAX_AMOSTRAS][2], float status[MAX_AMOSTRAS][3]);
@@ -97,6 +97,12 @@ void inicializar_matriz(int quantidade_linhas, int colunas, float matriz[][colun
     for (int i=0; i<50; i++){
         for (int j=0; j<colunas; j++){
             matriz[i][j] = rand() % 1000 + 1;
+        }
+    }
+    printf("Amostras atuais: ");
+    for (int l=0; l<quantidade_linhas;l++){
+        for(int j =0; j < quantidade_linhas; j++){
+            printf("%f", matriz[l][j]);
         }
     }
 }
