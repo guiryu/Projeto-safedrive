@@ -52,11 +52,10 @@ int main(){
             inicializar_matriz(quantidade_linhas, 3, status);     
         }
         else if(menu==2){ // Inserir nova amostra
-            quantidade_linhas++;
             // Velocidades
-            printf("Velocidade atual: ");
+            printf("Velocidade atual  (km/h): ");
             scanf("%f", &velocidades[quantidade_linhas][0]);
-            printf("Velocidade do veículo à frente: ");
+            printf("Velocidade do veículo à frente (km/h): ");
             scanf("%f", &velocidades[quantidade_linhas][1]);
             // Sensores frontais
             printf("Radar: ");
@@ -66,10 +65,11 @@ int main(){
             printf("Câmera: ");
             scanf("%f", &sensores_frontais[quantidade_linhas][2]);
             // Sensores laterais
-            printf("Distância da faixa esquerda: ");
+            printf("Distância da faixa esquerda (metros): ");
             scanf("%f", &sensores_laterais[quantidade_linhas][0]);
-            printf("Distância da faixa direita: ");
+            printf("Distância da faixa direita (metros): ");
             scanf("%f", &sensores_laterais[quantidade_linhas][1]);
+            quantidade_linhas++;
         }
         else if(menu==3){ // Processar e exibir relatorio
             
@@ -96,10 +96,10 @@ void inicializar_matriz(int quantidade_linhas, int colunas, float matriz[][colun
     quantidade_linhas = 50;
     for (int i=0; i<50; i++){
         for (int j=0; j<colunas; j++){
-            matriz[i][j] = rand() % 1000 + 1;
+            matriz[i][j] = rand() % 200 + 1; // talvez seja melhor mudar o rand para ficar com valores melhores?
         }
     }
-    printf("Amostras atuais: ");
+    printf("\nAmostras atuais: \n");
     for (int l=0; l<quantidade_linhas;l++){
         for(int j =0; j < quantidade_linhas; j++){
             printf("%f", matriz[l][j]);
@@ -148,12 +148,12 @@ void distancia_segura(int sensi, int atrito, int colunas, int quantidade, float 
 }
 
     void analise_risco_frontal(int quantidade_linhas, float velocidades[MAX_AMOSTRAS][2], float processamento[MAX_AMOSTRAS][2], float status[MAX_AMOSTRAS][3]){
-        float distancia_validada = processamento[1][0];
+        float distancia_validada = processamento[1][0]; // Aqui ta so pegando o valor da linha 1, dar uma olhgada dps
         float distancia_segura = processamento[1][1];
         float velocidadeAtual =velocidades[1][0];
         float velocidadeFrente = velocidades[1][1];        
         float velocidadeRelativa = velocidadeAtual - velocidadeFrente;
-        if( velocidadeRelativa > 0){
+        if( velocidadeRelativa > 0){  //Aqui o for tem que ir antes, senao coloca os status iguaius para todas as amostras
             if (distancia_validada >= distancia_segura){
                 for (int i = 0; i < quantidade_linhas; i++){
                     status[i][0] = 0;    
@@ -208,68 +208,67 @@ void assistente_faixa(int quantidade_linhas, float velocidades[][2], float senso
 
 
 
-    void relatorio (int quantidade_linhas, float velocidades[MAX_AMOSTRAS][2], float sensores_frontais[MAX_AMOSTRAS][3] ,float sensores_laterais[MAX_AMOSTRAS][2], float processamento[MAX_AMOSTRAS][2] , float status[MAX_AMOSTRAS][3]){
+void relatorio (int quantidade_linhas, float velocidades[MAX_AMOSTRAS][2], float sensores_frontais[MAX_AMOSTRAS][3] ,float sensores_laterais[MAX_AMOSTRAS][2], float processamento[MAX_AMOSTRAS][2] , float status[MAX_AMOSTRAS][3]){
 
-        for (int i=0; i<quantidade_linhas; i++){
-            printf(SEPARADOR);
-            printf("Amostra %d\n", i+1);
-            printf("DADOS DE ENTRADA:\n");
-            printf("=====VELOCIDADES=====\n");
-            printf("Velocidade Atual: %.2f\n", velocidades[i][0]);
-            printf("Velocidade do veículo à frente: %.2f\n", velocidades[i][1]);
-            printf("=====SENSORES FRONTAIS=====\n");
-            printf("Sensor Radar: %.2f\n", sensores_frontais[i][0]);
-            printf("Sensor Lidar: %.2f\n", sensores_frontais[i][1]);
-            printf("Sensor Câmera: %.2f\n", sensores_frontais[i][2]);
-            printf("=====SENSORES LATERAIS=====\n");
-            printf("Distância da faixa esquerda: %.2f\n", sensores_laterais[i][0]);
-            printf("Distância da faixa direita: %.2f\n", sensores_laterais[i][1]);
-            
-            printf(SEPARADOR);
-            printf("DADOS PROCESSADOS:\n ");
-            printf("Distância Validada: %.2f\n", processamento[i][0]);
-            printf("Distância Segura Exigida: %.2f\n", processamento[i][1]);
-            
-            printf(SEPARADOR);
-            printf("TRADUTOR DE STATUS E MENSAGENS DE ALERTA\n");
-            printf("Status frontal:\n ");
-            if (status[i][0] == 0){
-                printf("SEGURO\n");
-            } else if(status[i][0] == 1){
-                printf("ATENÇÃO\n");
-            }else {
-                printf("RISCO DE COLISÃO (AEB ACIONADO)\n");
-            }
-            printf("Faixa esquerda:\n ");
-            if (status[i][1] == 0){
-                printf("NORMAL\n");
-            } else if (status[i][1] == 1){
-                printf("ATENÇÃO\n");
-            }else {
-                printf("PERIGO DE INVASÃO\n");   
-            }
-            
-            printf("Faixa direita:\n ");
-            if (status[i][2] == 0){
-                printf("NORMAL\n");
-            } else if (status[i][2] == 1){
-                printf("ATENÇÃO\n");
-            }else {
-                printf("PERIGO DE INVASÃO\n");   
-            }
-
-            printf(SEPARADOR);
-            printf("DECISÃO GERAL DO SISTEMA\n");
+    for (int i=0; i<quantidade_linhas; i++){
+        printf(SEPARADOR);
+        printf("Amostra %d\n", i+1);
+        printf("DADOS DE ENTRADA:\n");
+        printf("=====VELOCIDADES=====\n");
+        printf("Velocidade Atual: %.2f\n", velocidades[i][0]);
+        printf("Velocidade do veículo à frente: %.2f\n", velocidades[i][1]);
+        printf("=====SENSORES FRONTAIS=====\n");
+        printf("Sensor Radar: %.2f\n", sensores_frontais[i][0]);
+        printf("Sensor Lidar: %.2f\n", sensores_frontais[i][1]);
+        printf("Sensor Câmera: %.2f\n", sensores_frontais[i][2]);
+        printf("=====SENSORES LATERAIS=====\n");
+        printf("Distância da faixa esquerda: %.2f\n", sensores_laterais[i][0]);
+        printf("Distância da faixa direita: %.2f\n", sensores_laterais[i][1]);
         
-            if (status[i][0] ==2 || status[i][1] ==2 || status[i][2]==2){
-                printf("STATUS GERAL: INTERVEÇÃO CRÍTICA EXIGIDA\n");
-            }else if(status[i][0] ==1 || status[i][1] ==1 || status[i][2]==1){
-                printf("STATUS GERAL: ATENÇÃO\n");
-            }else{
-                printf("STATUS GERAL: NORMAL\n");
-            }
+        printf(SEPARADOR);
+        printf("DADOS PROCESSADOS:\n ");
+        printf("Distância Validada: %.2f\n", processamento[i][0]);
+        printf("Distância Segura Exigida: %.2f\n", processamento[i][1]);
+        
+        printf(SEPARADOR);
+        printf("TRADUTOR DE STATUS E MENSAGENS DE ALERTA\n");
+        printf("Status frontal:\n ");
+        if (status[i][0] == 0){
+            printf("SEGURO\n");
+        } else if(status[i][0] == 1){
+            printf("ATENÇÃO\n");
+        }else {
+            printf("RISCO DE COLISÃO (AEB ACIONADO)\n");
         }
-
+        printf("Faixa esquerda:\n ");
+        if (status[i][1] == 0){
+            printf("NORMAL\n");
+        } else if (status[i][1] == 1){
+            printf("ATENÇÃO\n");
+        }else {
+            printf("PERIGO DE INVASÃO\n");   
+        }
+            
+        printf("Faixa direita:\n ");
+        if (status[i][2] == 0){
+            printf("NORMAL\n");
+        } else if (status[i][2] == 1){
+            printf("ATENÇÃO\n");
+        }else {
+            printf("PERIGO DE INVASÃO\n");   
+        }
+        printf(SEPARADOR);
+        printf("DECISÃO GERAL DO SISTEMA\n");
+    
+        if (status[i][0] ==2 || status[i][1] ==2 || status[i][2]==2){
+            printf("STATUS GERAL: INTERVEÇÃO CRÍTICA EXIGIDA\n");
+        }else if(status[i][0] ==1 || status[i][1] ==1 || status[i][2]==1){
+            printf("STATUS GERAL: ATENÇÃO\n");
+        }else{
+            printf("STATUS GERAL: NORMAL\n");
+        }
     }
+
+}
 
         
