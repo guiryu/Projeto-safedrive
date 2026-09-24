@@ -11,14 +11,14 @@ Raphael Norio Arashiro Uehara - 10774187
 #define SEPARADOR ("================\n")
 
 
-void inicializar_matriz(int quantidade_linhas, int tamanho, float matriz[][tamanho]);
+void inicializar_matriz(int quantidade_linhas, int tamanho, float matriz[][tamanho], int range);
 void relatorio (int quantidade_linhas, float velocidades[MAX_AMOSTRAS][2], float sensores_frontais[MAX_AMOSTRAS][3] ,float sensores_laterais[MAX_AMOSTRAS][2], float processamento[MAX_AMOSTRAS][2] , float status[MAX_AMOSTRAS][3]);
-void fusao_sensores(int linhas, int tamanho, float matriz[linhas][tamanho], float processamento[MAX_AMOSTRAS][2]);
+void fusao_sensores(int linhas, int tamanho, float sensores[linhas][tamanho], float processamento[MAX_AMOSTRAS][2]);
 void distancia_segura(int sensi, int atrito, int colunas, int quantidade, float vel[][colunas], float processamento[][colunas]);
 void analise_risco_frontal(int quantidade_linhas, float velocidades[MAX_AMOSTRAS][2], float processamento[MAX_AMOSTRAS][2], float status[MAX_AMOSTRAS][3]);
 void assistente_faixa(int quantidade_linhas, float velocidades[][2], float sensores[][2], float status[][3]);
 
-int main(){
+int main(){ 
 
     float atrito;
     int sensibilidade, menu, quantidade_linhas = 0;  // quantidade_linhas = quantidade de amostras nas matrizes
@@ -45,11 +45,11 @@ int main(){
 
         if(menu==1){ // Inicializar matrizes
             quantidade_linhas = 50;
-            inicializar_matriz(quantidade_linhas, 2, velocidades);
-            inicializar_matriz(quantidade_linhas, 3, sensores_frontais);
-            inicializar_matriz(quantidade_linhas, 2, sensores_laterais);
-            inicializar_matriz(quantidade_linhas, 2, processamento);
-            inicializar_matriz(quantidade_linhas, 3, status);     
+            inicializar_matriz(quantidade_linhas, 2, velocidades, 200);
+            inicializar_matriz(quantidade_linhas, 3, sensores_frontais, 10);
+            inicializar_matriz(quantidade_linhas, 2, sensores_laterais, RAND_MAX);
+            inicializar_matriz(quantidade_linhas, 2, processamento, 3);
+            inicializar_matriz(quantidade_linhas, 3, status, 3);     
         }
         else if(menu==2){ // Inserir nova amostra
             // Velocidades
@@ -92,37 +92,41 @@ int main(){
     return 0;
 }
 
-void inicializar_matriz(int quantidade_linhas, int colunas, float matriz[][colunas]){
+void inicializar_matriz(int quantidade_linhas, int colunas, float matriz[][colunas], int range){
     quantidade_linhas = 50;
-    for (int i=0; i<50; i++){
-        for (int j=0; j<colunas; j++){
-            matriz[i][j] = rand() % 200 + 1; // talvez seja melhor mudar o rand para ficar com valores melhores?
+    if (range == RAND_MAX){  // Para os sensores laterais
+        for (int i=0; i<50; i++){
+            for (int j=0; j<colunas; j++){
+                matriz[i][j] = (float)rand() / range; 
+            }
         }
     }
-    printf("\nAmostras atuais: \n");
-    for (int l=0; l<quantidade_linhas;l++){
-        for(int j =0; j < quantidade_linhas; j++){
-            printf("%f", matriz[l][j]);
+    else{ // Para as outras matrizes
+        for (int i=0; i<50; i++){
+            for (int j=0; j<colunas; j++){
+                matriz[i][j] = rand() % range; 
+            }
         }
-    }
+    }   
 }
 
-void fusao_sensores(int linhas, int tamanho, float matriz[linhas][tamanho], float processamento[MAX_AMOSTRAS][2]){
+
+void fusao_sensores(int linhas, int tamanho, float sensores[linhas][tamanho], float processamento[MAX_AMOSTRAS][2]){
     float auxiliar=0;
     //ORDENAÇÂO
     for (int i=0; i<linhas; i++){
         for (int k = 0; k < tamanho - 1; k++){
             for (int j =0; j<tamanho-1-k; j++){
-                if(matriz[i][j]>matriz[i][j+1]){
-                    auxiliar=matriz[i][j];
-                    matriz[i][j]=matriz[i][j+1];
-                    matriz[i][j+1]=auxiliar;
+                if(sensores[i][j]>sensores[i][j+1]){
+                    auxiliar=sensores[i][j];
+                    sensores[i][j]=sensores[i][j+1];
+                    sensores[i][j+1]=auxiliar;
                }
             }
         }
     }
     for (int l=0; l<linhas;l++){
-        processamento[l][0]=matriz[l][1];
+        processamento[l][0]=sensores[l][1];
     }  
     
 }
@@ -147,36 +151,27 @@ void distancia_segura(int sensi, int atrito, int colunas, int quantidade, float 
          
 }
 
-    void analise_risco_frontal(int quantidade_linhas, float velocidades[MAX_AMOSTRAS][2], float processamento[MAX_AMOSTRAS][2], float status[MAX_AMOSTRAS][3]){
-        float distancia_validada = processamento[1][0]; // Aqui ta so pegando o valor da linha 1, dar uma olhgada dps
-        float distancia_segura = processamento[1][1];
-        float velocidadeAtual =velocidades[1][0];
-        float velocidadeFrente = velocidades[1][1];        
-        float velocidadeRelativa = velocidadeAtual - velocidadeFrente;
-        if( velocidadeRelativa > 0){  //Aqui o for tem que ir antes, senao coloca os status iguaius para todas as amostras
-            if (distancia_validada >= distancia_segura){
-                for (int i = 0; i < quantidade_linhas; i++){
-                    status[i][0] = 0;    
-                    }    
-                }
-            else if (distancia_validada < distancia_segura && distancia_validada >= (distancia_segura *0.5)){
-                for (int i = 0; i < quantidade_linhas; i++){
-                    status[i][0] = 1;
+void analise_risco_frontal(int quantidade_linhas, float velocidades[MAX_AMOSTRAS][2], float processamento[MAX_AMOSTRAS][2], float status[MAX_AMOSTRAS][3]){
+
+    for (int i=0; i<quantidade_linhas; i++){
+        float velocidadeRelativa = velocidades[i][0] - velocidades[i][1]; 
+           
+        if( velocidadeRelativa > 0){  
+            if (processamento[i][0] >= processamento[i][1]){
+                status[i][0] = 0;    
                     }
-                }
-            else{
-                for (int i = 0; i < quantidade_linhas; i++){
-                    status[i][0] = 2;
-                    }
-                }
+            else if (processamento[i][0] < processamento[i][1] && processamento[i][0] >= (processamento[i][1] *0.5)){
+                status[i][0] = 1;
             }
-        else if (velocidadeRelativa <= 0){
-            for (int i = 0; i < quantidade_linhas; i++){
-            status[i][0] = 0;
+            else{
+                status[i][0] = 2;
             }
         }
+        else if (velocidadeRelativa <= 0){
+            status[i][0] = 0;
+        }
     }
-
+}
 void assistente_faixa(int quantidade_linhas, float velocidades[][2], float sensores[][2], float status[][3]){
     float margem_dinamica;
     for (int i=0; i<quantidade_linhas; i++){
