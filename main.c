@@ -265,6 +265,5 @@ void relatorio (int quantidade_linhas, float velocidades[MAX_AMOSTRAS][2], float
             printf("STATUS GERAL: NORMAL\n");
         }
     }
-
 }
         
