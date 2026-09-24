@@ -32,6 +32,7 @@ int main(){
 
     // Menu
     do{
+        printf("\n");
         printf(SEPARADOR);
         printf("Menu: \n"
             "1- Carregar dados iniciais\n"
@@ -164,7 +165,7 @@ void analise_risco_frontal(int quantidade_linhas, float velocidades[MAX_AMOSTRAS
                 status[i][0] = 1;
             }
             else{
-                status[i][0] = 2;
+
             }
         }
         else if (velocidadeRelativa <= 0){
@@ -206,6 +207,7 @@ void assistente_faixa(int quantidade_linhas, float velocidades[][2], float senso
 void relatorio (int quantidade_linhas, float velocidades[MAX_AMOSTRAS][2], float sensores_frontais[MAX_AMOSTRAS][3] ,float sensores_laterais[MAX_AMOSTRAS][2], float processamento[MAX_AMOSTRAS][2] , float status[MAX_AMOSTRAS][3]){
 
     for (int i=0; i<quantidade_linhas; i++){
+        printf("\n");
         printf(SEPARADOR);
         printf("Amostra %d\n", i+1);
         printf("DADOS DE ENTRADA:\n");
@@ -265,5 +267,4 @@ void relatorio (int quantidade_linhas, float velocidades[MAX_AMOSTRAS][2], float
     }
 
 }
-
         
